@@ -51,6 +51,8 @@ public class Neg extends UnaryExpression {
             throw e;
         } catch (Exception e) {
             //If the inner expression cant be evaluated => it still contains a variable.
+
+            
             //We can return a new simplified Neg expression:
             return new Neg(getInnerExpression().simplify());
         }

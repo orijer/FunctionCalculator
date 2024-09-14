@@ -94,4 +94,9 @@ public class Plus extends BinaryExpression {
         //If neither is 0, and one of them still contains a variable, just return a new Plus expression:
         return new Plus(newLeft, newRight);
     }
+
+    @Override
+    public Plus reverse() {
+        return new Plus(getRightExpression(), getLeftExpression());
+    }
 }

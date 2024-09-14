@@ -88,7 +88,7 @@ public class Log extends BinaryExpression {
         }
 
         //If the left and right expressions are equal, their log is 1:
-        if (newLeft.equals(newRight)) {
+        if (newLeft.equals(newRight) || newLeft.equals(newRight.reverse())) {
             return new Num(1);
         }
 
@@ -103,5 +103,10 @@ public class Log extends BinaryExpression {
 
         //If they are different, and one of them still contains a variable, just return a new log expression:
         return new Log(newLeft, newRight);
+    }
+
+    @Override
+    public Log reverse() {
+        return new Log(getRightExpression(), getLeftExpression());
     }
 }

@@ -115,4 +115,9 @@ public class Pow extends BinaryExpression {
         //If one of them still contains a variable, just return a new Pow expression:
         return new Pow(newLeft, newRight);
     }
+
+    @Override
+    public Pow reverse() {
+        return new Pow(getRightExpression(), getLeftExpression());
+    }
 }

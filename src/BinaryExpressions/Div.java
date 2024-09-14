@@ -90,7 +90,7 @@ public class Div extends BinaryExpression {
         }
 
         //If the left and right expressions are equal, their quotient is 1:
-        if (newLeft.equals(newRight)) {
+        if (newLeft.equals(newRight) || newLeft.equals(newRight.reverse())) {
             return one;
         }
 
@@ -106,5 +106,10 @@ public class Div extends BinaryExpression {
         //If the right isn't 1, they are different, and one of them still contains a variable,
         //just return a new Div expression:
         return new Div(newLeft, newRight);
+    }
+
+    @Override
+    public Div reverse() {
+        return new Div(getRightExpression(), getLeftExpression());
     }
 }

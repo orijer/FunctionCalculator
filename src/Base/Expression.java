@@ -56,4 +56,11 @@ public interface Expression {
      * @return - true IFF this and other represent the exact same expression.
      */
     boolean equals(Expression other);
+
+    /**
+     * @return - if the expression contains a left part ad a right part, 
+     *          returns a new expression of the same type where the new left is the old right, and the new right is the old left.
+     *          otherwise, returns itself.
+     */
+    Expression reverse();
 }

@@ -89,7 +89,7 @@ public class Minus extends BinaryExpression {
         }
 
         //If the left and right expressions are equal, their difference is 0:
-        if (newLeft.equals(newRight)) {
+        if (newLeft.equals(newRight) || newLeft.equals(newRight.reverse())) {
             return zero;
         }
 
@@ -101,5 +101,10 @@ public class Minus extends BinaryExpression {
         //If neither is 0, they are different, and one of them still contains a variable,
         //just return a new Minus expression:
         return new Minus(newLeft, newRight);
+    }
+
+    @Override
+    public Minus reverse() {
+        return new Minus(getRightExpression(), getLeftExpression());
     }
 }

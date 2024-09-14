@@ -107,4 +107,9 @@ public class Mult extends BinaryExpression {
         //If neither is 0, 1, and one of them still contains a variable, just return a new expression for the product:
         return new Mult(newLeft, newRight);
     }
+
+    @Override
+    public Mult reverse() {
+        return new Mult(getRightExpression(), getLeftExpression());
+    }
 }

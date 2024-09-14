@@ -14,4 +14,9 @@ public abstract class BaseExpression implements Expression {
     public boolean equals(Expression other) {
         return this.toString().equals(other.toString());
     }
+
+    @Override
+    public Expression reverse() {
+        return this;
+    }
 }

@@ -75,4 +75,9 @@ public class Num implements Expression {
 
         return this.num == ((Num) other).num;
     }
+
+    @Override
+    public Expression reverse() {
+        return this;
+    }
 }

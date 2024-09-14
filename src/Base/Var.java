@@ -93,4 +93,9 @@ public class Var implements Expression {
 
         return this.var.equals(((Var) other).var);
     }
+
+    @Override
+    public Expression reverse() {
+        return this;
+    }
 }
