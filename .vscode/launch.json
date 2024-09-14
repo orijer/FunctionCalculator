@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Java Debug",
+            "request": "launch",
+            "mainClass": "FullTest", // Replace with your main class name
+            "projectName": "YourProjectName",
+            "classPaths": [
+                "bin"
+            ]
+        }
+    ]
+}
