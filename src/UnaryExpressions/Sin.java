@@ -48,6 +48,8 @@ public class Sin extends UnaryExpression {
 
             //If the inner expression can be evaluated, return its sine:
             return new Num(Math.sin(Math.toRadians(innerValue)));
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //If the inner expression cant be evaluated => it still contains a variable.
             //We can return a new simplified Sin expression:

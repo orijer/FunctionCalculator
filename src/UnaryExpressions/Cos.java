@@ -48,6 +48,8 @@ public class Cos extends UnaryExpression {
 
             //If the inner expression can be evaluated, return its cosine:
             return new Num(Math.cos(Math.toRadians(innerValue)));
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //If the inner expression cant be evaluated => it still contains a variable.
             //We can return a new simplified Cos expression:

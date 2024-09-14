@@ -20,7 +20,11 @@ public class Div extends BinaryExpression {
 
     @Override
     public double evaluate(Map<String, Double> assignment) throws Exception {
-        return getLeftExpression().evaluate(assignment) / getRightExpression().evaluate(assignment);
+        double result = getLeftExpression().evaluate(assignment) / getRightExpression().evaluate(assignment);
+        if (!Double.isFinite(result))
+            throw new IllegalArgumentException("Problem evaluating a div");
+
+        return result;
     }
 
     @Override
@@ -59,6 +63,8 @@ public class Div extends BinaryExpression {
         try {
             newLeft = new Num(getLeftExpression().evaluate());
             leftEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the left expression, so just simplify it:
             newLeft = getLeftExpression().simplify();
@@ -69,6 +75,8 @@ public class Div extends BinaryExpression {
         try {
             newRight = new Num(getRightExpression().evaluate());
             rightEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the right expression, so just simplify it:
             newRight = getRightExpression().simplify();
@@ -88,7 +96,11 @@ public class Div extends BinaryExpression {
 
         //If both the left and the right have been evaluated (to a double), we can return their numerical quotient:
         if (leftEvaluated && rightEvaluated) {
-            return new Num(((Num) newLeft).getNum() / ((Num) newRight).getNum());
+            double result = ((Num) newLeft).getNum() / ((Num) newRight).getNum();
+            if (!Double.isFinite(result))
+                throw new IllegalArgumentException("Problem simplifying a div");
+                
+            return new Num(result);
         }
 
         //If the right isn't 1, they are different, and one of them still contains a variable,

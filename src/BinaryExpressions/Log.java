@@ -22,8 +22,16 @@ public class Log extends BinaryExpression {
 
     @Override
     public double evaluate(Map<String, Double> assignment) throws Exception {
+        double base = getLeftExpression().evaluate(assignment);
+        if (base <= 0 || base == 1 || !Double.isFinite(base)) 
+            throw new IllegalArgumentException("Illegal base used inside a logarithm");
+
+        double argument = getRightExpression().evaluate(assignment);
+        if (argument <= 0 || Double.isFinite(argument))
+            throw new IllegalArgumentException("Illegal argument used inside a logarithm");
+
         //for any given c: log(a, b) = log(c, b) / log(c, a) :
-        return Math.log(getRightExpression().evaluate(assignment)) / Math.log(getLeftExpression().evaluate(assignment));
+        return Math.log(argument) / Math.log(base);
     }
 
     @Override
@@ -59,6 +67,8 @@ public class Log extends BinaryExpression {
         try {
             newLeft = new Num(getLeftExpression().evaluate());
             leftEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the left expression, so just simplify it:
             newLeft = getLeftExpression().simplify();
@@ -69,6 +79,8 @@ public class Log extends BinaryExpression {
         try {
             newRight = new Num(getRightExpression().evaluate());
             rightEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the right expression, so just simplify it:
             newRight = getRightExpression().simplify();
@@ -82,7 +94,11 @@ public class Log extends BinaryExpression {
 
         //If both the left and the right have been evaluated (to a double), we can return their log:
         if (leftEvaluated && rightEvaluated) {
-            return new Num(Math.log(((Num) newRight).getNum()) / Math.log(((Num) newLeft).getNum()));
+            double result = Math.log(((Num) newRight).getNum()) / Math.log(((Num) newLeft).getNum());
+            if (!Double.isFinite(result))
+                throw new IllegalArgumentException("Problem simplifying a log");
+
+            return new Num(result);
         }
 
         //If they are different, and one of them still contains a variable, just return a new log expression:

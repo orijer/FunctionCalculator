@@ -47,6 +47,8 @@ public class Neg extends UnaryExpression {
 
             //If the inner expression can be evaluated, return its negative:
             return new Num(-innerValue);
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //If the inner expression cant be evaluated => it still contains a variable.
             //We can return a new simplified Neg expression:

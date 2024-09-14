@@ -57,6 +57,8 @@ public class Minus extends BinaryExpression {
         try {
             newLeft = new Num(getLeftExpression().evaluate());
             leftEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the left expression, so just simplify it:
             newLeft = getLeftExpression().simplify();
@@ -67,6 +69,8 @@ public class Minus extends BinaryExpression {
         try {
             newRight = new Num(getRightExpression().evaluate());
             rightEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the right expression, so just simplify it:
             newRight = getRightExpression().simplify();

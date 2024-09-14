@@ -22,7 +22,11 @@ public class Pow extends BinaryExpression {
 
     @Override
     public double evaluate(Map<String, Double> assignment) throws Exception {
-        return Math.pow(getLeftExpression().evaluate(assignment), getRightExpression().evaluate(assignment));
+        double result = Math.pow(getLeftExpression().evaluate(assignment), getRightExpression().evaluate(assignment));
+        if (!Double.isFinite(result))
+            throw new IllegalArgumentException("Tried to raise a negative number to an illegal power");
+
+        return result;
     }
 
     @Override
@@ -73,6 +77,8 @@ public class Pow extends BinaryExpression {
         try {
             newLeft = new Num(getLeftExpression().evaluate());
             leftEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the left expression, so just simplify it:
             newLeft = getLeftExpression().simplify();
@@ -83,15 +89,27 @@ public class Pow extends BinaryExpression {
         try {
             newRight = new Num(getRightExpression().evaluate());
             rightEvaluated = true;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             //We can't evaluate the right expression, so just simplify it:
             newRight = getRightExpression().simplify();
             rightEvaluated = false;
         }
 
-        //If both the left and the right have been evaluated (to a double), we can return their numerical exp:
-        if (leftEvaluated && rightEvaluated) {
-            return new Num(Math.pow(((Num) newLeft).getNum(), ((Num) newRight).getNum()));
+        if (rightEvaluated) {
+            //If both the left and the right have been evaluated (to a double), we can return their numerical exp:
+            if (leftEvaluated) {
+                double result = Math.pow(((Num) newLeft).getNum(), ((Num) newRight).getNum());
+                if (!Double.isFinite(result))
+                    throw new IllegalArgumentException("Tried to raise a negative number to an illegal power");
+
+                return new Num(result);
+            }
+
+            //If the right has been evaluated to 1, left^right = left:
+            if (newRight.equals(new Num(1.0)))
+                return newLeft;
         }
 
         //If one of them still contains a variable, just return a new Pow expression:
