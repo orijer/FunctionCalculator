@@ -103,6 +103,39 @@ public class Div extends BinaryExpression {
             return new Num(result);
         }
 
+        if (newLeft instanceof Pow) {
+            Pow left = (Pow) newLeft;
+
+            //Handle expressions of the form: (x^y)/x => x^(y-1)
+            if (left.getLeftExpression().equals(newRight) || left.getLeftExpression().equals(newRight.reverse())) {
+                newRight = new Pow(newRight, new Num(1.0)); //we then treat it as (x^y)/(x^z)
+            }
+
+            if (newRight instanceof Pow) {
+                Pow right = (Pow) newRight;
+
+                //Handle expressions of the form: (x^y)/(x^z) => x^(y-z)
+                if (left.getLeftExpression().equals(right.getLeftExpression())
+                        || left.getLeftExpression().equals(right.getLeftExpression().reverse())) {
+                    Minus newPower = new Minus(left.getRightExpression(), right.getRightExpression());
+                    return new Pow(left.getLeftExpression(), newPower.simplify());
+                }
+
+                //Handle expressions of the form: (x^z)/(y^z) => (x/y)^z
+                if (left.getRightExpression().equals(right.getRightExpression())
+                        || left.getRightExpression().equals(right.getRightExpression().reverse())) {
+                    return new Pow(new Div(left.getLeftExpression(), right.getLeftExpression()),
+                            left.getRightExpression());
+                }
+            }
+        } else if (newRight instanceof Pow) { //Handle x/(x^y) => x^(1-y)
+            Pow right = (Pow) newRight;
+            if (newLeft.equals(right.getLeftExpression()) || newLeft.equals(right.getLeftExpression().reverse())) {
+                Minus newPower = new Minus(new Num(1.0), right.getRightExpression());
+                return new Pow(newLeft, newPower);
+            }
+        }
+
         //If the right isn't 1, they are different, and one of them still contains a variable,
         //just return a new Div expression:
         return new Div(newLeft, newRight);

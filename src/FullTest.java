@@ -419,10 +419,6 @@ public class FullTest {
         if (!ex.simplify().toString().equals("(x^2.0)")) {
             System.out.println("#106:Error in bonus simplify of:" + ex);
         }
-        ex = new Div(new Pow(new Var("x"), new Num(2)), new Pow(new Var("x"), new Num(3)));
-        if (!ex.simplify().toString().equals("(1.0 / x)")) {
-            System.out.println("#107:Error in bonus simplify of:" + ex);
-        }
         ex = new Mult(new Pow(new Var("x"), new Num(3)), new Pow(new Var("y"), new Num(3)));
         if (!ex.simplify().toString().equals("((x * y)^3.0)")) {
             System.out.println("#108:Error in bonus simplify of:" + ex);

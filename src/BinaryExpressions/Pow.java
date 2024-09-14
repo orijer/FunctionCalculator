@@ -112,6 +112,15 @@ public class Pow extends BinaryExpression {
                 return newLeft;
         }
 
+        //Handle expressions of the form: x^y^z => x^(y*z)
+        if (newLeft instanceof Pow) {
+            Pow powLeft = (Pow) newLeft;
+            return new Pow(powLeft.getLeftExpression(), new Mult(powLeft.getRightExpression(), newRight));
+        } else if (newRight instanceof Pow) {
+            Pow powRight = (Pow) newRight;
+            return new Pow(newLeft, new Mult(powRight.getLeftExpression(), powRight.getRightExpression()));
+        }
+
         //If one of them still contains a variable, just return a new Pow expression:
         return new Pow(newLeft, newRight);
     }

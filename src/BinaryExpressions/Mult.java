@@ -104,6 +104,39 @@ public class Mult extends BinaryExpression {
             return new Num(((Num) newLeft).getNum() * ((Num) newRight).getNum());
         }
 
+        //Handle expressions of the form: (x^y)*(x^z) => x^(y+z)
+        if (newLeft instanceof Pow) {
+            Pow left = (Pow) newLeft;
+
+            //Handle expressions of the form: (x^y)*x => x^(y+1)
+            if (left.getLeftExpression().equals(newRight) || left.getLeftExpression().equals(newRight.reverse())) {
+                newRight = new Pow(newRight, new Num(1.0)); //we then treat it as (x^y)*(x^z)
+            }
+
+            if (newRight instanceof Pow) {
+                Pow right = (Pow) newRight;
+
+                //Handle expressions of the form: (x^y)*(x^z) => x^(y+z)
+                if (left.getLeftExpression().equals(right.getLeftExpression())
+                        || left.getLeftExpression().equals(right.getLeftExpression().reverse())) {
+                    Plus newPower = new Plus(left.getRightExpression(), right.getRightExpression());
+                    return new Pow(left.getLeftExpression(), newPower.simplify());
+                }
+
+                //Handle expressions of the form: (x^z)*(y^z) => (x*y)^z
+                if (left.getRightExpression().equals(right.getRightExpression()) 
+                    || left.getRightExpression().equals(right.getRightExpression().reverse())) {
+                    return new Pow(new Mult(left.getLeftExpression(), right.getLeftExpression()), left.getRightExpression());
+                }
+            }
+        } else if (newRight instanceof Pow) { //Handle x*(x^y) => x^(1+y)
+            Pow right = (Pow) newRight;
+            if (newLeft.equals(right.getLeftExpression()) || newLeft.equals(right.getLeftExpression().reverse())) {
+                Plus newPower = new Plus(new Num(1.0), right.getRightExpression());
+                return new Pow(newLeft, newPower);
+            }
+        }
+
         //If neither is 0, 1, and one of them still contains a variable, just return a new expression for the product:
         return new Mult(newLeft, newRight);
     }
