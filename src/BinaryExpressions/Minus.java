@@ -98,6 +98,36 @@ public class Minus extends BinaryExpression {
             return new Num(((Num) newLeft).getNum() - ((Num) newRight).getNum());
         }
 
+        //handle expressions of the form: (x*4)-(2*x)=>2*x
+        if (newLeft instanceof Mult && newRight instanceof Mult) {
+            Mult left = (Mult) newLeft;
+            Mult right = (Mult) newRight;
+
+            if (left.getLeftExpression().equals(right.getLeftExpression()) //(x*a)+(x*b)
+                    || left.getLeftExpression().equals(right.getLeftExpression().reverse())) {
+                return (new Mult(new Minus(left.getRightExpression(), right.getRightExpression()),
+                        left.getLeftExpression())).simplify();
+            }
+
+            if (left.getLeftExpression().equals(right.getRightExpression()) //(x*a)+(b*x)
+                    || left.getLeftExpression().equals(right.getRightExpression().reverse())) {
+                return (new Mult(new Minus(left.getRightExpression(), right.getLeftExpression()),
+                        left.getLeftExpression())).simplify();
+            }
+
+            if (left.getRightExpression().equals(right.getLeftExpression()) //(a*x)+(x*b)
+                    || left.getRightExpression().equals(right.getLeftExpression().reverse())) {
+                return (new Mult(new Minus(left.getLeftExpression(), right.getRightExpression()),
+                        left.getRightExpression())).simplify();
+            }
+
+            if (left.getRightExpression().equals(right.getRightExpression()) //(a*x)+(b*x)
+                    || left.getRightExpression().equals(right.getRightExpression().reverse())) {
+                return (new Mult(new Minus(left.getLeftExpression(), right.getLeftExpression()),
+                        left.getRightExpression())).simplify();
+            }
+        }
+
         //If neither is 0, they are different, and one of them still contains a variable,
         //just return a new Minus expression:
         return new Minus(newLeft, newRight);
