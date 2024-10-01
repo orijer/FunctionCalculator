@@ -11,15 +11,14 @@
                 "src/Base/*.java",
                 "src/BinaryExpressions/*.java",
                 "src/UnaryExpressions/*.java",
-                "src/FullTest.java"
+                "src/FullTest.java",
+                "src/Parser.java",
+                "src/Main.java"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-                "$javac"
-            ],
             "detail": "Compile Java files"
         },
         {
@@ -29,7 +28,7 @@
             "args": [
                 "-cp",
                 "bin",
-                "FullTest"
+                "Main"
             ],
             "dependsOn": "compile",
             "group": {
