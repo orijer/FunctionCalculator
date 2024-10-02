@@ -1,45 +1,13 @@
-import java.util.Stack;
 import java.util.regex.Pattern;
 
 import Base.*;
 import UnaryExpressions.*;
 import BinaryExpressions.*;
 
+/**
+ * The class the contains the code that transforms a string of an expression to the correct expression objects tree.
+ */
 public class Parser {
-    public static String addBracketsAroundUnaryOperands(String input) {
-        StringBuilder sb = new StringBuilder();
-        int length = input.length();
-        int currentBracket = 0;
-        Stack<Integer> bracketOpenings = new Stack<>();
-
-        for (int i = 0; i < length; i++) {
-            if (input.charAt(i) == '(') {
-                currentBracket++;
-
-            } else if (input.charAt(i) == ')') {
-                currentBracket--;
-
-                // Check if we now need to close the last bracket we created:
-                if (!bracketOpenings.empty() && bracketOpenings.peek() == currentBracket) {
-                    sb.append(')');
-                    bracketOpenings.pop();
-                }
-
-            } else if (i < length - 3 && input.charAt(i + 3) == '(') {
-                if (input.charAt(i) == 's' && input.charAt(i + 1) == 'i' && input.charAt(i + 2) == 'n'
-                        || input.charAt(i) == 'c' && input.charAt(i + 1) == 'o' && input.charAt(i + 2) == 's'
-                        || input.charAt(i) == 'l' && input.charAt(i + 1) == 'o' && input.charAt(i + 2) == 'g') {
-                    sb.append('(');
-                    bracketOpenings.add(currentBracket);
-                }
-            }
-
-            sb.append(input.charAt(i));
-        }
-
-        return sb.toString();
-    }
-
     /**
      * @return true IFF the input is a string with legal brackets surrounded by another pair of brackets.
      */
@@ -69,7 +37,12 @@ public class Parser {
         return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
     }
 
-    public static int findSplit(String input) throws Exception {
+    /**
+     * @param input - An expression in string form, whose outermost operator is binary.
+     * @return the index of the outermost binary operator, the one that splits the input into left and right subexpressions.
+     * @throws Exception if the input has incorrect bracket format.
+     */
+    private static int findSplit(String input) throws Exception {
         int bracketCounters = 0;
         int length = input.length();
         for (int i = 0; i < length; i++) {
@@ -77,7 +50,7 @@ public class Parser {
                 bracketCounters++;
             if (input.charAt(i) == ')') {
                 if ((--bracketCounters) < 0)
-                    throw new Exception("bad format");
+                    throw new Exception("bad brackets format in input: " + input);
             }
 
             if (bracketCounters == 0 && isSplitChar(input.charAt(i))) {
@@ -88,6 +61,12 @@ public class Parser {
         throw new Exception("Illegal brackets format in input: " + input);
     }
 
+    /**
+     * 
+     * @param input - An expression in string form, whose outermost operator is a log.
+     * @return the parsed expression including the log.
+     * @throws Exception if the input has incorrect bracket format.
+     */
     private static Expression handleLogs(String input) throws Exception {
         int bracketCounters = 0;
         int length = input.length();
@@ -96,10 +75,10 @@ public class Parser {
                 bracketCounters++;
             if (input.charAt(i) == ')') {
                 if ((--bracketCounters) < 0)
-                    throw new Exception("bad format");
+                    throw new Exception("bad brackets format in input: " + input);
             }
 
-            if (bracketCounters == 0 && input.charAt(i) == ',') {
+            if (bracketCounters == 0 && input.charAt(i) == ',') { // ',' is the character that splits the left and right subexpressions in a log.
                 Expression leftSubExpression = parseRec(input.substring(0, i));
                 Expression rightSubExpression = parseRec(input.substring(i + 1));
 
@@ -107,9 +86,13 @@ public class Parser {
             }
         }
 
-        throw new Exception("Illegal brackets format in input: " + input);
+        throw new Exception("Illegal log format in input: " + input);
     }
 
+    /**
+     * @return an expression object of: left operator right
+     * @throws Exception if the operator isn't supported: {+, -, *, /, ^}
+     */
     private static Expression combineLeftAndRightSubExpressions(Expression left, Expression right, char operator)
             throws Exception {
         switch (operator) {
@@ -128,6 +111,10 @@ public class Parser {
         throw new Exception("Operator: " + operator + " not supported");
     }
 
+    /**
+     * The recursive function that parses the input step by step.
+     * @throws Exception if the input's brackets are not valid.
+     */
     private static Expression parseRec(String input) throws Exception {
         input = input.trim();
         int length = input.length();
@@ -151,14 +138,22 @@ public class Parser {
         if (input.startsWith("sin(") && input.charAt(length - 1) == ')'
                 && isBracketed("(" + input.substring(4, length - 1).trim() + ")")) {
             return new Sin(parseRec(input.substring(4, length - 1)));
-        } else if (input.startsWith("cos(") && input.charAt(length - 1) == ')'
-                && isBracketed("(" + input.substring(4, length - 1).trim() + ")")) { //same as above but for cos:
+
+        } 
+        
+        // Same as above but for cos:
+        if (input.startsWith("cos(") && input.charAt(length - 1) == ')'
+                && isBracketed("(" + input.substring(4, length - 1).trim() + ")")) { 
             return new Cos(parseRec(input.substring(4, length - 1)));
-        }
+
+        } 
+        
+        // We need to handle logs a little differently:
         if (input.startsWith("log(") && input.charAt(length - 1) == ')') {
             return handleLogs(input.substring(4, length - 1).trim());
         }
 
+        // If we reached here, we have left operator right, but we dont know yet where exactly is the outermost operator:
         int splitIndex = findSplit(input);
         Expression leftSubExpression = parseRec(input.substring(0, splitIndex));
         Expression rightSubExpression = parseRec(input.substring(splitIndex + 1));
@@ -166,6 +161,12 @@ public class Parser {
         return combineLeftAndRightSubExpressions(leftSubExpression, rightSubExpression, input.charAt(splitIndex));
     }
 
+    /**
+     * Parses the given string and returns the corresponding expression object.
+     * @param input - The string to parse.
+     * @return a new expression object the corresponds to the string input.
+     * @throws Exception if the input's brackets are not valid.
+     */
     public static Expression parse(String input) throws Exception {
         return parseRec(input);
     }
