@@ -107,6 +107,6 @@ public class Log extends BinaryExpression {
 
     @Override
     public Log reverse() {
-        return new Log(getRightExpression(), getLeftExpression());
+        return this;
     }
 }

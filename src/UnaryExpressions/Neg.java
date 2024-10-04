@@ -52,7 +52,11 @@ public class Neg extends UnaryExpression {
         } catch (Exception e) {
             //If the inner expression cant be evaluated => it still contains a variable.
 
-            // TODO: if inside a neg is another neg, we can cancel them out
+            if (getInnerExpression() instanceof Neg) {
+                Neg innerExpression = (Neg) getInnerExpression();
+                return innerExpression.getInnerExpression();
+            }
+
             //We can return a new simplified Neg expression:
             return new Neg(getInnerExpression().simplify());
         }

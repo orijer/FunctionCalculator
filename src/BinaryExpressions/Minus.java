@@ -135,6 +135,6 @@ public class Minus extends BinaryExpression {
 
     @Override
     public Minus reverse() {
-        return new Minus(getRightExpression(), getLeftExpression());
+        return this;
     }
 }

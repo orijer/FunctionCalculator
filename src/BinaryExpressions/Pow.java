@@ -127,6 +127,6 @@ public class Pow extends BinaryExpression {
 
     @Override
     public Pow reverse() {
-        return new Pow(getRightExpression(), getLeftExpression());
+        return this;
     }
 }

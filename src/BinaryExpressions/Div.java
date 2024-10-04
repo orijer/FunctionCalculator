@@ -142,7 +142,7 @@ public class Div extends BinaryExpression {
     }
 
     @Override
-    public Div reverse() {
-        return new Div(getRightExpression(), getLeftExpression());
+    public Div reverse() { //division is not semetric...
+        return this;
     }
 }

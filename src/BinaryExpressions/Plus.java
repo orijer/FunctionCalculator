@@ -117,6 +117,67 @@ public class Plus extends BinaryExpression {
             }
         }
 
+        // Handle simplification of some repeated addition:
+        if (newLeft instanceof Plus) {
+            Plus left = (Plus) newLeft;
+
+            if (newRight instanceof Num) {
+                if (left.getLeftExpression() instanceof Num) {
+                    // (num1 + x) + num2 => (num1 + num2) + x
+                    return (new Plus(new Plus(left.getLeftExpression(), newRight), left.getRightExpression()))
+                            .simplify();
+                } else if (left.getRightExpression() instanceof Num) {
+                    // (x + num1) + num2 => (num1 + num2) + x
+                    return (new Plus(new Plus(left.getRightExpression(), newRight), left.getLeftExpression()))
+                            .simplify();
+                }
+            }
+
+            if (newRight instanceof Plus) {
+                Plus right = (Plus) newRight;
+
+                if (left.getLeftExpression() instanceof Num) {
+                    if (right.getLeftExpression() instanceof Num) {
+                        // (num1 + x) + (num2 + y) => (num1 + num2) + (x + y)
+                        return (new Plus(new Plus(left.getLeftExpression(), right.getLeftExpression()),
+                                new Plus(left.getRightExpression(), right.getRightExpression()))).simplify();
+                    }
+
+                    if (right.getRightExpression() instanceof Num) {
+                        // (num1 + x) + (y + num2) => (num1 + num2) + (x + y)
+                        return (new Plus(new Plus(left.getLeftExpression(), right.getRightExpression()),
+                                new Plus(left.getRightExpression(), right.getLeftExpression()))).simplify();
+                    }
+                }
+
+                if (left.getRightExpression() instanceof Num) {
+                    if (right.getLeftExpression() instanceof Num) {
+                        // (x + num1) + (num2 + y) => (num1 + num2) + (x + y)
+                        return (new Plus(new Plus(left.getRightExpression(), right.getLeftExpression()),
+                                new Plus(left.getLeftExpression(), right.getRightExpression()))).simplify();
+                    }
+
+                    if (right.getRightExpression() instanceof Num) {
+                        // (x + num1) + (y + num2) => (num1 + num2) + (x + y)
+                        return (new Plus(new Plus(left.getRightExpression(), right.getRightExpression()),
+                                new Plus(left.getLeftExpression(), right.getLeftExpression()))).simplify();
+                    }
+                }
+            }
+        } else if (newRight instanceof Plus && newLeft instanceof Num) {
+            Plus right = (Plus) newRight;
+
+            if (right.getLeftExpression() instanceof Num) {
+                // num1 + (num2 + x) => (num1 + num2) + x
+                return (new Plus(new Plus(newLeft, right.getLeftExpression()), right.getRightExpression())).simplify();
+            }
+
+            if (right.getRightExpression() instanceof Num) {
+                // num1 + (x + num2) => (num1 + num2) + x
+                return (new Plus(new Plus(newLeft, right.getRightExpression()), right.getLeftExpression())).simplify();
+            }
+        }
+
         //If neither is 0, and one of them still contains a variable, just return a new Plus expression:
         return new Plus(newLeft, newRight);
     }
