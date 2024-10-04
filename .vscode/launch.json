@@ -5,7 +5,7 @@
             "type": "java",
             "name": "Java Debug",
             "request": "launch",
-            "mainClass": "FullTest", // Replace with your main class name
+            "mainClass": "FullTest", // The name of the class that contains main
             "projectName": "YourProjectName",
             "classPaths": [
                 "bin"

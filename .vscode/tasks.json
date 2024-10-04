@@ -37,6 +37,23 @@
             },
             "problemMatcher": [],
             "detail": "Run the Java program"
+        },
+        {
+            "label": "tests",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-cp",
+                "bin",
+                "FullTest"
+            ],
+            "dependsOn": "compile",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "detail": "Run the Tests"
         }
     ]
 }
