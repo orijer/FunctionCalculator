@@ -643,7 +643,7 @@ public class FullTest {
         // Test 6:
         ex = new Pow(new Plus(new Var("x"), new Var("y")), new Num(2));
         nestedStats.testDone(6,
-                ex.differentiate("x").simplify().toString().equals("(((x + y)^2.0) * (2.0 / (x + y)))"));
+                ex.differentiate("x").simplify().toString().equals("(2.0 * (x + y))"));
 
         // Test 7:
         ex = new Plus(new Mult(new Plus(new Num(3), new Num(6)), new Var("x")),
@@ -699,18 +699,6 @@ public class FullTest {
     public static void main(String[] args) {
         FullTest tests = new FullTest();
         tests.runTests();
-
-        // bonus checking
-        /*
-        Expression ex;
-        ex = new Mult(new Mult(new Num(2), new Var("x")), new Mult(new Var("x"), new Num(3)));
-        if (!ex.simplify().toString().equals("(6.0 * (x^2.0))")) {
-            System.out.println("#110:Error in bonus simplify of:" + ex);
-        }
-        ex = new Div(new Div(new Num(2), new Var("x")), new Div(new Var("x"), new Num(3)));
-        if (!ex.simplify().toString().equals("(6.0 / (x^2.0))")) {
-            System.out.println("#111:Error in bonus simplify of:" + ex);
-        }*/
     }
 
     /**
