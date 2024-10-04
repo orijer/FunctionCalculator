@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 import Base.Expression;
@@ -34,7 +35,7 @@ public class Main {
         }
     }
 
-    public static void evaluateExpression(Expression expression) { //TODO: ask the user for assignments to variables
+    public static void evaluateExpression(Expression expression) {
         try {
             System.out.println(expression + " = " + expression.evaluate() + "\n");
         } catch (Exception e) {
@@ -54,6 +55,35 @@ public class Main {
         System.out.println(expression + "\nWas differentiated by " + by + " to: \n" + simplifiedExpression + "\n");
 
         return simplifiedExpression;
+    }
+
+    public static Expression assignToExpression(Expression expression, Scanner reader) {
+        List<String> variables = expression.getVariables();
+        if (variables.size() == 0) {
+            System.out.println("The current expression doesn't contain any variables!");
+            return null;
+        }
+
+        System.out.println("Enter a variable from: ");
+        for (String var : variables) {
+            System.out.print(":  " + var + "  :");
+        }
+        System.out.println();
+
+        String assignmentVariable = reader.nextLine();
+        if (!variables.contains(assignmentVariable)) {
+            System.out.println("No variable found with the name: " + assignmentVariable);
+            return null;
+        }
+
+        System.out.println("Enter the value of this assignment: ");
+        Expression assignmentValue = enterNewExpression(reader);
+        if (assignmentValue == null) {
+            System.out.println("Invalid expression was entered, so the assignment failed!");
+            return null;
+        }
+
+        return expression.assign(assignmentVariable, assignmentValue);
     }
 
     public static void main(String[] args) {
@@ -95,6 +125,13 @@ public class Main {
                     String diffBy = reader.nextLine();
                     currentExpression = differentiateExpression(currentExpression, diffBy);
                     break;
+                case ASSIGN:
+                    Expression assignedExpression = assignToExpression(currentExpression, reader);
+                    if (assignedExpression != null) {
+                        currentExpression = assignedExpression;
+                        printExpression(currentExpression);
+                    }
+                    break;
             }
         }
 
@@ -108,7 +145,8 @@ public class Main {
         ENTER_NEW_EXPRESSION(2, "Enter a new Expression"),
         EVALUATE_EXPRESSION(3, "Try to evaluate the current expression"),
         SIMPLIFY_EXPRESSION(4, "Simplify the current Expression"),
-        DIFFERENTIATE_EXPRESSION(5, "Differentiate the current expression");
+        DIFFERENTIATE_EXPRESSION(5, "Differentiate the current expression"),
+        ASSIGN(6, "Assign a variable of the current expression");
 
         private final int value;
         private final String description;
